@@ -1,0 +1,4 @@
+base_url: "http://172.16.50.7:2045/sign-in"
+username: "test01@gmail.com"
+password: "Test@123"
+implicit_wait: 30
