@@ -1,4 +1,6 @@
 import os
+import time
+
 import pytest
 import yaml
 from datetime import datetime
@@ -24,8 +26,25 @@ def test_Add_Promotion_code(driver, config, Add_Promotion_code):
 
     page = Promotional(driver)
 
-    page.Add_Promotion_code(Add_Promotion_code)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M")
+    add_promotion_value = f"{Add_Promotion_code['Add_Promotion']}_{timestamp}"  # first line comming from ymal table+ join time formte
+    Add_Promotion_code["Add_Promotion"] = add_promotion_value  # now Add_Promotion value has been changed.
 
-    # Wait for success toast and assert
-    #toast = page.wait.until(EC.visibility_of_element_located(page.customer_successfully_text))
-    #assert "Customer group created successfully." in toast.text
+    page.Add_Promotion_code_page(Add_Promotion_code)
+    actual_message = page.wait.until(EC.visibility_of_element_located(page.add_promo_code_toast))
+
+    assert "Promotional Code created successfully." in actual_message.text
+
+
+@pytest.mark.parametrize("Add_Promotion_code", load_groups())
+def test_Inactive_Promotion(driver, config, Add_Promotion_code):
+    login_page = SignIn(driver)
+    login_page.sign_in(config["username"], config["password"])
+
+    page = Promotional(driver)
+
+    page.Inactive_Promotion()
+    actual_message = page.wait.until(EC.visibility_of_element_located(page.add_promo_code_toast))
+
+    assert "Promotional code status updated successfully." in actual_message.text
+
